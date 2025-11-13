@@ -1,2 +1,8 @@
 Application-Code/backend/node_modules/
 Application-Code/backend/.env
+
+Application-Code/frontend/node_modules/
+Application-Code/backend/node_modules/
+Application-Code/frontend/.env
+Application-Code/backend/.env
+.env
