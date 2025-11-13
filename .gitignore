@@ -6,3 +6,12 @@ Application-Code/backend/node_modules/
 Application-Code/frontend/.env
 Application-Code/backend/.env
 .env
+
+# local dev ignores
+Application-Code/frontend/node_modules/
+Application-Code/backend/node_modules/
+Application-Code/frontend/build/
+Application-Code/frontend/.env
+Application-Code/backend/.env
+porcelain.txt
+status.txt
