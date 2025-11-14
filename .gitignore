@@ -2,3 +2,4 @@ Application-Code/frontend/node_modules/
 Application-Code/backend/node_modules/
 Application-Code/backend/.env
 .env
+Application-Code/frontend/build/
