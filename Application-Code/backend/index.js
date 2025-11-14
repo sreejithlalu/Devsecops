@@ -1,46 +1,57 @@
-const tasks = require("./routes/tasks");
-const connection = require("./db");
-const cors = require("cors");
-const express = require("express");
-const app = express();
+// index.js
+require('dotenv').config();
+
+const express = require('express');
+const cors = require('cors');
 const mongoose = require('mongoose');
+const tasks = require('./routes/tasks');
+const connectDB = require('./db');
 
-connection();
-
+const app = express();
 app.use(express.json());
 app.use(cors());
 
-// Health check endpoints
+// Health check endpoint
+app.get('/healthz', (req, res) => res.status(200).send('Healthy'));
 
-// Basic health check to see if the server is running
-app.get('/healthz', (req, res) => {
-    res.status(200).send('Healthy');
-});
-
-let lastReadyState = null;  
-// Readiness check to see if the server is ready to serve requests
+// Readiness check — depends on MongoDB
+let lastReadyState = null;
 app.get('/ready', (req, res) => {
-    // Here you can add logic to check database connection or other dependencies
-    const isDbConnected = mongoose.connection.readyState === 1;
-    if (isDbConnected !== lastReadyState) {
-        console.log(`Database readyState: ${mongoose.connection.readyState}`);
-        lastReadyState = isDbConnected;
-    }
-    
-    if (isDbConnected) {
-        res.status(200).send('Ready');
-    } else {
-        res.status(503).send('Not Ready');
-    }
+  const isDbConnected = mongoose.connection.readyState === 1;
+  if (isDbConnected !== lastReadyState) {
+    console.log(`Database readyState changed: ${mongoose.connection.readyState}`);
+    lastReadyState = isDbConnected;
+  }
+  return isDbConnected ? res.status(200).send('Ready') : res.status(503).send('Not Ready');
 });
 
-// Startup check to ensure the server has started correctly
-app.get('/started', (req, res) => {
-    // Assuming the server has started correctly if this endpoint is reachable
-    res.status(200).send('Started');
+// Startup check
+app.get('/started', (req, res) => res.status(200).send('Started'));
+
+// API routes
+app.use('/api/tasks', tasks);
+
+// Start server
+const port = process.env.PORT || 5000;
+const server = app.listen(port, () => {
+  console.log(`🚀 Backend running on port ${port}...`);
 });
 
-app.use("/api/tasks", tasks);
+// Connect to MongoDB
+connectDB()
+  .then(ok => {
+    if (!ok) {
+      console.warn('⚠️  App started but MongoDB connection failed. /ready will return 503.');
+    }
+  })
+  .catch(err => console.error('Unexpected DB connection error:', err));
 
-const port = process.env.PORT || 3500;
-app.listen(port, () => console.log(`Listening on port ${port}...`));
+// Graceful shutdown
+process.on('SIGTERM', () => {
+  console.log('SIGTERM received, shutting down...');
+  server.close(async () => {
+    await require('./db').closeDB();
+    process.exit(0);
+  });
+});
+
