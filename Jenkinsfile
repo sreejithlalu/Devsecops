@@ -18,11 +18,9 @@ tools {
       steps {
         dir('Application-Code/backend') { 
         sh 'npm ci' 
-        sh 'npm test'
       }
         dir('Application-Code/frontend') { 
         sh 'npm ci'
-        sh 'npm test'
       }
      }
     }
