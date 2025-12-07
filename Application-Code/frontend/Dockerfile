@@ -1,6 +1,9 @@
-FROM node:14
-WORKDIR /usr/src/app
+FROM node:18-slim
+WORKDIR /app
 COPY package*.json ./
-RUN npm install
+RUN npm ci 
 COPY . .
-CMD [ "npm", "start" ]
+ENV PORT=3000
+EXPOSE 3000
+CMD ["npm", "start"]
+

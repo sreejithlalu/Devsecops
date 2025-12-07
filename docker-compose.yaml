@@ -1,0 +1,53 @@
+services:
+  mongo-db:
+    image: mongo:6
+    container_name: mongo-prod
+    restart: unless-stopped
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo-data:/data/db
+
+  backend:
+    build:
+      context: ./Application-Code/backend
+      dockerfile: Dockerfile
+    container_name: backend-prod
+    restart: unless-stopped
+    ports:
+      - "5000:5000"
+    environment:
+      - PORT=5000
+      - MONGO_URI=mongodb://mongo-db:27017/deskdemo
+    depends_on:
+      - mongo-db
+
+  frontend:
+    build:
+      context: ./Application-Code/frontend
+      dockerfile: Dockerfile
+    container_name: frontend-prod
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      - REACT_APP_BACKEND_URL=http://localhost:5000/api/tasks
+    depends_on:
+      - backend
+
+  jenkins:
+    image: jenkins/jenkins:jdk21
+    container_name: jenkins
+    restart: unless-stopped
+    user: root
+    ports:
+      - "8080:8080"
+      - "50000:50000"
+    volumes:
+      - jenkins-data:/var/jenkins_home
+      - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+      - JAVA_OPTS=-Djenkins.install.runSetupWizard=false
+volumes:
+  mongo-data:
+  jenkins-data:
