@@ -46,7 +46,7 @@ tools {
      stage('Docker Image Push') {
       steps {
 	script {
-        docker.withRegistry('https://registry.hub.docker.com', 'docker_cred'){
+        docker.withRegistry('https://index.docker.io/v1/', 'docker_cred'){
         sh "docker push ${env.BACKEND_IMAGE} "
         sh "docker push ${env.FRONTEND_IMAGE} "
       }
