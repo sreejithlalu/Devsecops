@@ -35,8 +35,12 @@ tools {
     }
      stage('Build Images') {
       steps {
-        dir('Application-Code/backend')  sh "docker build -t ${env.BACKEND_IMAGE} ."
-        dir('Application-Code/frontend') sh "docker build -t ${env.FRONTEND_IMAGE} ."
+        dir('Application-Code/backend') {
+	  sh "docker build -t ${env.BACKEND_IMAGE} ."
+           }      
+        dir('Application-Code/frontend') {
+          sh "docker build -t ${env.FRONTEND_IMAGE} ."
+           }
       }
     }
      stage('Docker Image Push') {
