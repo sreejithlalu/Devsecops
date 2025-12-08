@@ -16,10 +16,10 @@ tools {
     stage('Docker Tag') {
       steps {
 	script {
-                    env.GIT_SHORT = "${env.GIT_COMMIT?.take(7) ?: 'local'}"
-                    env.TAG = "${env.GIT_SHORT}-${env.BUILD_ID}"
-                    env.FRONTEND_IMAGE = "${DOCKER_REG}:frontend-${env.TAG}"
-                    env.BACKEND_IMAGE = "${DOCKER_REG}:backend-${env.TAG}"
+                 env.GIT_SHORT = "${env.GIT_COMMIT?.take(7) ?: 'local'}"
+                 env.TAG = "${env.GIT_SHORT}-${env.BUILD_ID}"
+                 env.FRONTEND_IMAGE = "${DOCKER_REG}:frontend-${env.TAG}"
+                 env.BACKEND_IMAGE = "${DOCKER_REG}:backend-${env.TAG}"
             }
 	}
         }
@@ -41,10 +41,12 @@ tools {
     }
      stage('Docker Image Push') {
       steps {
+	script {
         docker.withRegistry('https://registry.hub.docker.com', 'docker_cred'){
         sh 'docker push ${env.BACKEND_IMAGE} '
         sh 'docker push ${env.FRONTEND_IMAGE}'
       }
+	}
     }
     }
       stage('Info') {
