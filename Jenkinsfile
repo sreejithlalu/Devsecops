@@ -47,8 +47,8 @@ tools {
       steps {
 	script {
         docker.withRegistry('https://registry.hub.docker.com', 'docker_cred'){
-        sh 'docker push ${env.BACKEND_IMAGE} '
-        sh 'docker push ${env.FRONTEND_IMAGE}'
+        sh "docker push ${env.BACKEND_IMAGE} "
+        sh "docker push ${env.FRONTEND_IMAGE} "
       }
 	}
     }
