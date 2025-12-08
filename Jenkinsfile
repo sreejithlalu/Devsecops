@@ -5,8 +5,7 @@ tools {
 }
   environment
   {
-    FRONTEND_IMAGE = "devsecops-frontend:${env.BUILD_ID}"
-    BACKEND_IMAGE = "devsecops-backend:${env.BUILD_ID}"
+    DOCKER_REG = "sreejitheyne/devsecops"
   }
   stages {
     stage('Git Code fetch') {
@@ -14,23 +13,39 @@ tools {
         git branch: 'main', url: 'https://github.com/sreejithlalu/Devsecops.git'
       }
     }
-     stage('Frontend & Backend') {
+    stage('Docker Tag') {
+            script {
+                    enc.GIT_SHORT = "${env.GIT_COMMIT?.take(7) ?: 'local'}"
+                    env.TAG = "${env.GIT_SHORT}-${env.BUILD_ID}"
+                    env.FRONTEND_IMAGE = "${DOCKER_REG}:frontend-${env.TAG}"
+                    env.BACKEND_IMAGE = "${DOCKER_REG}:backend-${env.TAG}"
+            }
+        }
+     stage('npm dependency check') {
       steps {
-        dir('Application-Code/backend') { 
-        sh 'npm ci' 
+        dir('Application-Code/backend') {
+        sh 'npm ci'
       }
-        dir('Application-Code/frontend') { 
+        dir('Application-Code/frontend') {
         sh 'npm ci'
       }
      }
     }
      stage('Build Images') {
       steps {
-        dir('Application-Code/backend') { sh 'docker build -t ${BACKEND_IMAGE} .' }
-        dir('Application-Code/frontend') {sh 'docker build -t ${FRONTEND_IMAGE} .'}
+        dir('Application-Code/backend') { sh 'docker build -t ${env.BACKEND_IMAGE} .' }
+        dir('Application-Code/frontend') {sh 'docker build -t ${env.FRONTEND_IMAGE} .'}
       }
     }
-     stage('Info') {
+     stage('Docker Image Push') {
+      steps {
+        docker.withRegistry('https://registry.hub.docker.com', 'docker_cred'){
+        sh 'docker push ${env.BACKEND_IMAGE} '
+        sh 'docker push ${env.FRONTEND_IMAGE}'
+      }
+    }
+    }
+      stage('Info') {
       steps {
         echo "Build: ${env.BACKEND_IMAGE} 'Successfully Build'"
         echo "Build: ${env.FRONTEND_IMAGE} 'Successfully Build'"
@@ -38,4 +53,3 @@ tools {
     }
   }
 }
-
