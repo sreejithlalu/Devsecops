@@ -29,7 +29,7 @@ app.get('/ready', (req, res) => {
 app.get('/started', (req, res) => res.status(200).send('Started'));
 
 // API routes
-app.use('/api/tasks', tasks);
+app.use('/tasks', tasks);
 
 // Start server
 const port = process.env.PORT || 5000;
