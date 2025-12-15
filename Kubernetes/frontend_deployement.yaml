@@ -21,7 +21,7 @@ spec:
         - name: dockerhub-secret
       containers: 
         - name: frontend
-          image: sreejitheyne/devsecops:frontend-4e9a6b4-18
+          image: sreejitheyne/devsecops:frontend-54a52a9-19
           ports:
             - containerPort: 3000
          
