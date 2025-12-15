@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: mongo-db
+  namespace: dev  
+spec:
+  selector:
+    app: mongo-db
+    tier: database  
+  ports:
+    - protocol: TCP
+      port: 27017
+      targetPort: 27017

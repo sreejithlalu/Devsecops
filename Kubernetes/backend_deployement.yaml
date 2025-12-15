@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: Deployment 
+metadata:
+  name: backend-deployment
+  namespace: dev
+  labels:
+    app: backend
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: backend
+      tier: backend
+  template:
+    metadata: 
+      labels:
+        app: backend
+        tier: backend
+    spec:
+      imagePullSecrets:
+        - name: dockerhub-secret 
+      containers: 
+        - name: backend
+          image: sreejitheyne/devsecops:backend-4e9a6b4-17
+          ports:
+            - containerPort: 5000
+          env:
+            - name: PORT
+              value: "5000"
+            - name: MONGO_URI
+              value: "mongodb://mongo-db:27017/mongo-db"
