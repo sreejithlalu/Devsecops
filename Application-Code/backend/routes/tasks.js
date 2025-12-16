@@ -3,14 +3,22 @@ const express = require("express");
 const router = express.Router();
 
 router.post("/", async (req, res) => {
-    try {
-        const task = await new Task(req.body).save();
-        res.send(task);
-    } catch (error) {
-        res.send(error);
-    }
-});
+  try {
+    const payload = {
+      text: req.body.text || req.body.task, // backward compatibility
+      completed: req.body.completed ?? false,
+    };
 
+    if (!payload.text) {
+      return res.status(400).json({ error: "Task text is required" });
+    }
+
+    const task = await Task.create(payload);
+    res.status(201).json(task);
+  } catch (error) {
+    res.status(500).json(error);
+  }
+});
 router.get("/", async (req, res) => {
     try {
         const tasks = await Task.find();

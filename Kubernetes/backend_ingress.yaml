@@ -1,7 +1,7 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: devsecops-ingress
+  name: backend-ingress
   namespace: dev
   annotations:
     nginx.ingress.kubernetes.io/use-regex: "true"
@@ -11,7 +11,6 @@ spec:
     - host: devsecops.local
       http:
         paths:
-          # 🔥 API FIRST
           - path: /api(/|$)(.*)
             pathType: ImplementationSpecific
             backend:
@@ -19,13 +18,4 @@ spec:
                 name: backend-service
                 port:
                   number: 5000
-
-          # 🔥 Frontend LAST
-          - path: /(.*)
-            pathType: ImplementationSpecific
-            backend:
-              service:
-                name: frontend-service
-                port:
-                  number: 80
 

@@ -21,7 +21,7 @@ spec:
         - name: dockerhub-secret 
       containers: 
         - name: backend
-          image: sreejitheyne/devsecops:backend-4e9a6b4-17
+          image: sreejitheyne/devsecops:backend-d958781-21
           ports:
             - containerPort: 5000
           env:
